@@ -27,6 +27,29 @@ public class HomeController : Controller
         return View(pokemons);
     }
 
+    public IActionResult Details (int id)
+    {
+        var pokemon = db.Pokemons
+            .where(p => p.Numero == id)
+            .Include(p => p.Genero)
+            .Include(p => p.Regiao)
+            .Include(p => p.Tipos)
+            .ThenInclude(p => p.Tipo)
+                .SingleOrDefault();
+
+    DetailsVM details = new()
+    {
+        Atual = pokemon,
+        Anterior = _db.pokemons
+            .OrderByDescending(p => p.Numero)
+            .FirstOrDefault(p => p.Numero <id),
+        Proximo = _db.Pokemons
+            .OrderBy(p => p.Numero)
+            .FirstOrDefault(p => p.Numero >id)
+
+    };
+            return View(details);
+    }
     public IActionResult Privacy()
     {
         return View();
